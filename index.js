@@ -8,6 +8,8 @@ function allowAll (req, file, cb) {
   cb(null, true)
 }
 
+function stubAll () {}
+
 function Multer (options) {
   if (options.storage) {
     this.storage = options.storage
@@ -20,6 +22,7 @@ function Multer (options) {
   this.limits = options.limits
   this.preservePath = options.preservePath
   this.fileFilter = options.fileFilter || allowAll
+  this.fieldFilter = options.fieldFilter || stubAll
 }
 
 Multer.prototype._makeMiddleware = function (fields, fileStrategy) {
@@ -44,14 +47,13 @@ Multer.prototype._makeMiddleware = function (fields, fileStrategy) {
       fileFilter(req, file, cb)
     }
 
-    console.log('- middleware setup -')
-
     return {
       limits: this.limits,
       preservePath: this.preservePath,
       storage: this.storage,
       fileFilter: wrappedFileFilter,
-      fileStrategy: fileStrategy
+      fieldFilter: this.fieldFilter,
+      fileStrategy: fileStrategy,
     }
   }
 
